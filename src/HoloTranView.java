@@ -336,31 +336,32 @@ public class HoloTranView extends JFrame {
         jButton7.setText("LOG IN");
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                try {
-                    String user = jTextField6.getText();
-                    String pass = String.valueOf(jPasswordField1.getPassword());
-
-                    String sql = "select user,pass from where user = '" + user + "'pass = '" + pass + "'";
-                    rs = st.executeQuery(sql);
-
-                    int count = 0;
-
-                    while(rs.next()) {
-                        count = count + 1;
-                    }
-
-                    if(count == 1){
-                        JOptionPane.showMessageDialog(null, "Login Successful");
-                        username = user;
-                        loginSuccess = true;
-                        jButton7ActionPerformed(evt);
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Username or password not correct");
-                    }
-
-                } catch (Exception ex) {
-
-                }
+//                try {
+//                    String user = jTextField6.getText();
+//                    String pass = String.valueOf(jPasswordField1.getPassword());
+//
+//                    String sql = "select user,pass from where user = '" + user + "'pass = '" + pass + "'";
+//                    rs = st.executeQuery(sql);
+//
+//                    int count = 0;
+//
+//                    while(rs.next()) {
+//                        count = count + 1;
+//                    }
+//
+//                    if(count == 1){
+//                        JOptionPane.showMessageDialog(null, "Login Successful");
+//                        username = user;
+//                        loginSuccess = true;
+//                        jButton7ActionPerformed(evt);
+//                    } else {
+//                        JOptionPane.showMessageDialog(null, "Username or password not correct");
+//                    }
+//
+//                } catch (Exception ex) {
+//
+//                }
+                jButton7ActionPerformed(evt);
             }
         });
 

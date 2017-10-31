@@ -17,15 +17,17 @@ public class HoloTranView extends JFrame {
     Connection con;
     Statement st;
     ResultSet rs;
-    private String username;
+    private String userName;
+    private String userID;
     private boolean loginSuccess;
 
     HoloTranView() {
         super("Convert Video to Hologram");
         fullPath = "";
+        con = null;
         loginSuccess = false;
-        username = "";
-        connect();
+        userName = "";
+        userID = "";
         initComponents();
     }
 
@@ -336,32 +338,45 @@ public class HoloTranView extends JFrame {
         jButton7.setText("LOG IN");
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-//                try {
-//                    String user = jTextField6.getText();
-//                    String pass = String.valueOf(jPasswordField1.getPassword());
-//
-//                    String sql = "select user,pass from where user = '" + user + "'pass = '" + pass + "'";
-//                    rs = st.executeQuery(sql);
-//
-//                    int count = 0;
-//
-//                    while(rs.next()) {
-//                        count = count + 1;
-//                    }
-//
-//                    if(count == 1){
-//                        JOptionPane.showMessageDialog(null, "Login Successful");
-//                        username = user;
-//                        loginSuccess = true;
-//                        jButton7ActionPerformed(evt);
-//                    } else {
-//                        JOptionPane.showMessageDialog(null, "Username or password not correct");
-//                    }
-//
-//                } catch (Exception ex) {
-//
-//                }
-                jButton7ActionPerformed(evt);
+                try {
+                    String user = jTextField6.getText();
+                    String pass = String.valueOf(jPasswordField1.getPassword());
+
+
+                    if(user.length() >= 1 && pass.length() >= 1) {
+                        String sql = "select user,pass from where user = '" + user + "'pass = '" + pass + "'";
+                        rs = st.executeQuery(sql);
+                        con.close();
+
+                        int count = 0;
+
+                        while(rs.next()) {
+                            count = count + 1;
+                        }
+
+                        if(count == 1){
+                            JOptionPane.showMessageDialog(null, "Login Successful");
+                            userName = rs.getString(2);
+                            userID = rs.getString(1);
+                            loginSuccess = true;
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Username or password not correct");
+                            jTextField6.setText("");
+                            jPasswordField1.setText("");
+                        }
+
+                        if(loginSuccess) {
+                            jButton7ActionPerformed(evt);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Please input username or password");
+                        jTextField6.setText("");
+                        jPasswordField1.setText("");
+                    }
+
+                } catch (Exception ex) {
+
+                }
             }
         });
 
@@ -583,14 +598,31 @@ public class HoloTranView extends JFrame {
 
     public void connect() {
         try {
-            String driver = "sun.jdbc.odbc.JdbcOdbcDriver";
+            con = null;
+            System.out.println("1");
+            String driver = "com.mysql.jdbc.Driver";
+            System.out.println("2");
             Class.forName(driver);
-
-            String db = "jdbc:odbc:name";
-            con = DriverManager.getConnection(db);
+            System.out.println("3");
+            String user1 = "admin";
+            System.out.println("4");
+            String pass1 = "b69d150d7677e04fb697130b9d06c3c1f742c9f5a11ad1b8";
+            System.out.println("5");
+            String url1 = "jdbc:mysql://139.59.111.233:80/test1";
+            System.out.println("6");
+//            String db = "jdbc:mysql://139.59.111.233/phpmyadmin?user=admin&password=b69d150d7677e04fb697130b9d06c3c1f742c9f5a11ad1b8";
+            con = DriverManager.getConnection(url1, user1, pass1);
+            System.out.println("7");
             st = con.createStatement();
-        } catch(Exception ex){
+            System.out.println("8");
 
+            if(con != null) {
+                System.out.println("connected");
+            } else {
+                System.out.println("connection error");
+            }
+        } catch(Exception ex){
+            System.out.println("connection fail");
         }
     }
 
@@ -674,6 +706,7 @@ public class HoloTranView extends JFrame {
         // TODO add your handling code here: -> To login
         jPanel4.setVisible(false);
         jPanel5.setVisible(true);
+        connect();
         pack();
     }
     //    p3 Listener
@@ -681,6 +714,7 @@ public class HoloTranView extends JFrame {
         // TODO add your handling code here: -> To p4
         jPanel5.setVisible(false);
         jPanel6.setVisible(true);
+        connect();
         pack();
     }
 

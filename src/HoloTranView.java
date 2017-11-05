@@ -12,6 +12,9 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JProgressBar;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 public class HoloTranView extends JFrame {
 
     private static String fullPath;
@@ -21,6 +24,7 @@ public class HoloTranView extends JFrame {
     private String userName;
     private String userID;
     private boolean loginSuccess;
+    private boolean uploadStatus;
 
     HoloTranView() {
         super("Convert Video to Hologram");
@@ -29,6 +33,7 @@ public class HoloTranView extends JFrame {
         loginSuccess = false;
         userName = "";
         userID = "";
+        uploadStatus = false;
         initComponents();
     }
 
@@ -494,7 +499,7 @@ public class HoloTranView extends JFrame {
         jTextField7 = new javax.swing.JTextField();
         jTextField8 = new javax.swing.JTextField();
         jTextField9 = new javax.swing.JTextField();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        //jComboBox1 = new javax.swing.JComboBox<>();
         jButton8 = new javax.swing.JButton();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
@@ -502,6 +507,7 @@ public class HoloTranView extends JFrame {
         jButton9 = new javax.swing.JButton();
         jLabel20 = new javax.swing.JLabel();
         jButtonBack4 = new javax.swing.JButton();
+        JProgressBar progressBar = new JProgressBar(0, 100);
 
         jLabel15.setFont(new java.awt.Font("Century Gothic", 0, 36)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
@@ -513,28 +519,62 @@ public class HoloTranView extends JFrame {
         jLabel16.setForeground(new java.awt.Color(0, 153, 153));
         jLabel16.setText("UPLOAD TO HOLOTUBE");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        //jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jButton8.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jButton8.setForeground(new java.awt.Color(0, 153, 153));
         jButton8.setText("UPLOAD");
 
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                uploadStatus = true;
+                String uploadURL = "http://139.59.111.233/video";
+                String filePath = jTextField7.getText();
+
+                if (filePath.equals("")) {
+                    JOptionPane.showMessageDialog(null,"Please choose a file to upload!", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    uploadStatus = false;
+                } else {
+                    try {
+                        File uploadFile = new File(filePath);
+                        progressBar.setValue(0);
+
+                        uploadTask task = new uploadTask(uploadURL, uploadFile, uploadStatus);
+
+                        task.addPropertyChangeListener(null);
+                        task.execute();
+                    } catch (Exception ex) {
+                        uploadStatus = false;
+                        JOptionPane.showMessageDialog(null,
+                                "Error executing upload task: " + ex.getMessage(), "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
+
+            }
+        });
+
         jLabel17.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(0, 102, 102));
-        jLabel17.setText("Name");
+        jLabel17.setText("Video Location");
 
         jLabel18.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel18.setForeground(new java.awt.Color(0, 102, 102));
         jLabel18.setText("Description");
 
-        jLabel19.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel19.setForeground(new java.awt.Color(0, 102, 102));
-        jLabel19.setText("Type");
+        //jLabel19.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        //jLabel19.setForeground(new java.awt.Color(0, 102, 102));
+        //jLabel19.setText("Type");
+
+        progressBar.setPreferredSize(new java.awt.Dimension(200, 30));
+        progressBar.setStringPainted(true);
 
         jButton9.setText("Browse");
         jButton9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                fileChoose(3);
+                fileChoose(6);
             }
         });
 
@@ -546,13 +586,18 @@ public class HoloTranView extends JFrame {
         jButtonBack4.setText("Log out");
         jButtonBack4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                jButtonBack3ActionPerformed(e);
-                try {
-                    con.close();
-                    connect();
-                } catch (Exception ex) {
+                if(uploadStatus == true) {
+                    JOptionPane.showMessageDialog(null, "Please wait until upload finish");
+                } else {
+                    jButtonBack3ActionPerformed(e);
+                    try {
+                        con.close();
+                        connect();
+                    } catch (Exception ex) {
 
+                    }
                 }
+
             }
 
         });
@@ -589,7 +634,8 @@ public class HoloTranView extends JFrame {
                                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                                                 .addComponent(jButton9))
                                                                         .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                        .addComponent(progressBar)
+                                                                        /*.addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)*/)
                                                                 .addComponent(jButtonBack4)
                                                                 .addGap(55, 55, 55)
                                                         )))))
@@ -619,7 +665,8 @@ public class HoloTranView extends JFrame {
                                         .addComponent(jLabel18))
                                 .addGap(13, 13, 13)
                                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(progressBar)
+                                        //.addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(jLabel19))
                                 .addGap(13, 13, 13)
                                 .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
@@ -670,6 +717,11 @@ public class HoloTranView extends JFrame {
                                 JOptionPane.showMessageDialog(null, "Register completed");
                                 jButtonBack3ActionPerformed(e);
                                 con.close();
+                                try {
+                                    connect();
+                                } catch (Exception ex) {
+
+                                }
                             } else {
                                 JOptionPane.showMessageDialog(null, "This username already exit");
                             }
@@ -943,7 +995,16 @@ public class HoloTranView extends JFrame {
                     break;
                 case 5: jTextField5.setText(fileopen.getSelectedFile().toString());
                     break;
+                case 6: jTextField7.setText(fileopen.getSelectedFile().toString());
+                    break;
             }
+        }
+    }
+
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("progress" == evt.getPropertyName()) {
+            int progress = (Integer) evt.getNewValue();
+            progressBar.setValue(progress);
         }
     }
 
@@ -1074,6 +1135,7 @@ public class HoloTranView extends JFrame {
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
+    private JProgressBar progressBar;
 
     //p7
     private javax.swing.JButton jButton1999;

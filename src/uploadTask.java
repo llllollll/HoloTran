@@ -51,7 +51,7 @@ public class uploadTask extends SwingWorker<Void, Integer> {
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null, "Error uploading file: " + ex.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
-            status = false;
+            this.status = false;
             ex.printStackTrace();
             setProgress(0);
             cancel(true);
@@ -69,7 +69,11 @@ public class uploadTask extends SwingWorker<Void, Integer> {
             JOptionPane.showMessageDialog(null,
                     "File has been uploaded successfully!", "Message",
                     JOptionPane.INFORMATION_MESSAGE);
-            status = false;
+            this.status = false;
         }
+    }
+
+    public boolean getStatus() {
+        return this.status;
     }
 }

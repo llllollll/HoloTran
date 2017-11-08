@@ -9,8 +9,10 @@ public class HoloTranModel {
     private String position;
     private ArrayList<String> setPosition;
     private int min;
+    public boolean status = false;
 
     public void convertVideoHoloTran() {
+
         min = 0;
         position = "up";
         setPosition = new ArrayList<>();
@@ -20,6 +22,7 @@ public class HoloTranModel {
         String right = locationFile.get(3);
 
         ImageFromVideo tempVideo = ImageFromVideo.getInstance();
+        status = true;
         tempVideo.nextVideo(position, locationFile.get(0), locationFile.get(4));
         upSec = new ArrayList<>(tempVideo.getAllSec());
         setPosition.add(position);
@@ -67,6 +70,7 @@ public class HoloTranModel {
         ImagePosition thePosition = new ImagePosition(locationFile.get(4), min, upSec, downSec, leftSec, rightSec,
                 setPosition);
         new VideoFromImage("HoloTran", thePosition.getLocationProcess(), locationFile.get(4), min);
+        status = false;
     }
 
     public int minSize() {
@@ -85,5 +89,13 @@ public class HoloTranModel {
 
     public void addPath(ArrayList<String> input) {
         locationFile = new ArrayList<>(input);
+    }
+
+    public void addStatus(boolean input) {
+        this.status = input;
+    }
+
+    public boolean getStatus() {
+        return this.status;
     }
 }

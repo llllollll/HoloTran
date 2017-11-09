@@ -25,8 +25,7 @@ public class HoloTranController {
 
                 theModel.addPath(locationList);
                 theModel.convertVideoHoloTran();
-//                theView.setConvertStatus(theModel.getStatus());
-//                locationList.clear();
+                locationList.clear();
 
             } catch(Exception ex) {
                 System.out.println(ex);

@@ -10,5 +10,6 @@
     <orderEntry type="library" exported="" name="lib" level="project" />
     <orderEntry type="library" exported="" name="jcl-over-slf4j-1.7.25" level="project" />
     <orderEntry type="library" name="mysql-connector-java-5.1.44-bin" level="project" />
+    <orderEntry type="library" name="jsch-0.1.54" level="project" />
   </component>
 </module>

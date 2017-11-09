@@ -2,6 +2,8 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.sql.*;
 
 
@@ -12,8 +14,12 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JProgressBar;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpATTRS;
+import com.jcraft.jsch.SftpException;
 
 public class HoloTranView extends JFrame {
 
@@ -26,6 +32,9 @@ public class HoloTranView extends JFrame {
     private boolean loginSuccess;
     public boolean uploadStatus;
     public boolean convertStatus;
+    static ChannelSftp channelSftp;
+    static Session session;
+    static Channel channel;
 
     HoloTranView() {
         super("Convert Video to Hologram");
@@ -36,6 +45,9 @@ public class HoloTranView extends JFrame {
         userID = "";
         uploadStatus = false;
         convertStatus = false;
+        channelSftp = null;
+        session = null;
+        channel = null;
         initComponents();
     }
 
@@ -250,19 +262,12 @@ public class HoloTranView extends JFrame {
 
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
-            if(convertStatus) {
-                JOptionPane.showMessageDialog(null, "Please wait until finish", "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            } else {
                 if(jTextField1.getText().length() >= 1 && jTextField2.getText().length() >= 1 && jTextField3.getText().length() >= 1 && jTextField4.getText().length() >= 1 && jTextField5.getText().length() >= 1) {
-                    JOptionPane.showMessageDialog(null, "Converting");
+                    JOptionPane.showMessageDialog(null, "Convert finish");
                 } else {
-                JOptionPane.showMessageDialog(null, "Please select your path before start", "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Please select your path before start", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
-            }
-
             }
 
         });
@@ -559,28 +564,61 @@ public class HoloTranView extends JFrame {
                             JOptionPane.ERROR_MESSAGE);
                 } else {
                     uploadStatus = true;
-                    String uploadURL = "http://139.59.111.233/video";
-                    String filePath = jTextField7.getText();
+                    final String SETURL = "139.59.111.233";
+                    final int SETPORT = 22;
+                    final String SFTUSER = "root"; // User Name
+                    final String SFTPASS = "212224236"; // Password
+                    final String SFTWORKINGDIR = "/var/www/html/video";
+                    String LOCALDIRECTORY;
 
-                    if(filePath.equals("")) {
+                    if(jTextField7.getText().length() < 1) {
                         JOptionPane.showMessageDialog(null,"Please choose a file to upload!", "Error",
                                 JOptionPane.ERROR_MESSAGE);
                         uploadStatus = false;
+                        jTextField7.setText("");
+                        LOCALDIRECTORY = jTextField7.getText();
                     } else {
                         try {
-                            File uploadFile = new File(filePath);
-                            progressBar.setValue(0);
+                            LOCALDIRECTORY = jTextField7.getText();
+                            JSch jsch = new JSch();
+                            session = jsch.getSession(SFTUSER, SETURL, SETPORT);
+                            session.setPassword(SFTPASS);
+                            java.util.Properties config = new java.util.Properties();
+                            config.put("StrictHostKeyChecking", "no");
+                            session.setConfig(config);
+                            session.connect(); // Create SFTP Session
+                            channel = session.openChannel("sftp"); // Open SFTP Channel
+                            channel.connect();
+                            channelSftp = (ChannelSftp) channel;
+                            channelSftp.cd(SFTWORKINGDIR); // Change Directory on SFTP Server
 
-                            uploadTask task = new uploadTask(uploadURL, uploadFile, uploadStatus);
+                            recursiveFolderUpload(LOCALDIRECTORY, SFTWORKINGDIR, userID);
+                            JOptionPane.showMessageDialog(null, "Upload successfully" );
+                            uploadStatus = false;
 
-                            task.addPropertyChangeListener(null);
-                            task.execute();
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(null,
                                     "Error executing upload task: " + ex.getMessage(), "Error",
                                     JOptionPane.ERROR_MESSAGE);
                             uploadStatus = false;
+                            jTextField7.setText("");
+                            channel = null;
+                            session = null;
+                            channelSftp = null;
+                            LOCALDIRECTORY = jTextField7.getText();
+                        } finally {
+                            if (channelSftp != null)
+                                channelSftp.disconnect();
+                            if (channel != null)
+                                channel.disconnect();
+                            if (session != null)
+                                session.disconnect();
                         }
+                        channel = null;
+                        session = null;
+                        channelSftp = null;
+                        jTextField7.setText("");
+                        LOCALDIRECTORY = jTextField7.getText();
                     }
                 }
             }
@@ -968,6 +1006,51 @@ public class HoloTranView extends JFrame {
         }
     }
 
+    private static void recursiveFolderUpload(String sourcePath, String destinationPath, String inputUserID) throws SftpException, FileNotFoundException {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        File sourceFile = new File(sourcePath);
+        if (sourceFile.isFile()) {
+
+            // copy if it is a file
+            channelSftp.cd(destinationPath);
+            if (!sourceFile.getName().startsWith("."))
+                channelSftp.put(new FileInputStream(sourceFile), timestamp + " - " +inputUserID + " - " +sourceFile.getName(), ChannelSftp.OVERWRITE);
+
+        } else {
+
+            System.out.println("inside else " + sourceFile.getName());
+            File[] files = sourceFile.listFiles();
+
+            if (files != null && !sourceFile.getName().startsWith(".")) {
+
+                channelSftp.cd(destinationPath);
+                SftpATTRS attrs = null;
+
+                // check if the directory is already existing
+                try {
+                    attrs = channelSftp.stat(destinationPath + "/" + sourceFile.getName());
+                } catch (Exception e) {
+                    System.out.println(destinationPath + "/" + sourceFile.getName() + " not found");
+                }
+
+                // else create a directory
+                if (attrs != null) {
+                    System.out.println("Directory exists IsDir=" + attrs.isDir());
+                } else {
+                    System.out.println("Creating dir " + sourceFile.getName());
+                    channelSftp.mkdir(sourceFile.getName());
+                }
+
+                for (File f: files) {
+                    recursiveFolderUpload(f.getAbsolutePath(), destinationPath + "/" + sourceFile.getName(), inputUserID);
+                }
+
+            }
+        }
+
+    }
+
+
     public String getUpVideoLocation() {
         fullPath = jTextField3.getText();
         return this.fullPath;
@@ -991,14 +1074,6 @@ public class HoloTranView extends JFrame {
     public String getOutputVideoLocation() {
         fullPath = jTextField5.getText();
         return this.fullPath + "//";
-    }
-
-    public boolean getConvertStatus() {
-        return convertStatus;
-    }
-
-    public void setConvertStatus(boolean input) {
-        convertStatus = input;
     }
 
     private void fileChoose(int input) {
@@ -1037,13 +1112,6 @@ public class HoloTranView extends JFrame {
                 case 6: jTextField7.setText(fileopen.getSelectedFile().toString());
                     break;
             }
-        }
-    }
-
-    public void propertyChange(PropertyChangeEvent evt) {
-        if ("progress" == evt.getPropertyName()) {
-            int progress = (Integer) evt.getNewValue();
-            progressBar.setValue(progress);
         }
     }
 

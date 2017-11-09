@@ -95,6 +95,7 @@ public class ImagePosition {
 
         AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 
+
         if(quadrants == 3 || quadrants == 90) {
             g.drawImage(op.filter(input, null), x, y, height*3/2, width, null);
         } else {

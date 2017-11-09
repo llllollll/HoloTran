@@ -12,7 +12,7 @@ import javax.swing.*;
 
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.JProgressBar;
+//import javax.swing.JProgressBar;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
@@ -35,6 +35,7 @@ public class HoloTranView extends JFrame {
     static ChannelSftp channelSftp;
     static Session session;
     static Channel channel;
+    private static String FILEUPLOADPATH;
 
     HoloTranView() {
         super("Convert Video to Hologram");
@@ -43,6 +44,7 @@ public class HoloTranView extends JFrame {
         loginSuccess = false;
         userName = "";
         userID = "";
+        FILEUPLOADPATH = "";
         uploadStatus = false;
         convertStatus = false;
         channelSftp = null;
@@ -538,7 +540,7 @@ public class HoloTranView extends JFrame {
         jButton9 = new javax.swing.JButton();
         jLabel20 = new javax.swing.JLabel();
         jButtonBack4 = new javax.swing.JButton();
-        JProgressBar progressBar = new JProgressBar(0, 100);
+//        JProgressBar progressBar = new JProgressBar(0, 100);
 
         jLabel15.setFont(new java.awt.Font("Century Gothic", 0, 36)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
@@ -593,7 +595,7 @@ public class HoloTranView extends JFrame {
                             channelSftp.cd(SFTWORKINGDIR); // Change Directory on SFTP Server
 
                             recursiveFolderUpload(LOCALDIRECTORY, SFTWORKINGDIR, userID);
-                            JOptionPane.showMessageDialog(null, "Upload successfully" );
+
                             uploadStatus = false;
 
                         } catch (Exception ex) {
@@ -636,8 +638,8 @@ public class HoloTranView extends JFrame {
         //jLabel19.setForeground(new java.awt.Color(0, 102, 102));
         //jLabel19.setText("Type");
 
-        progressBar.setPreferredSize(new java.awt.Dimension(200, 30));
-        progressBar.setStringPainted(true);
+//        progressBar.setPreferredSize(new java.awt.Dimension(200, 30));
+//        progressBar.setStringPainted(true);
 
         jButton9.setText("Browse");
         jButton9.addActionListener(new java.awt.event.ActionListener() {
@@ -703,7 +705,7 @@ public class HoloTranView extends JFrame {
                                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                                                 .addComponent(jButton9))
                                                                         .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(progressBar)
+//                                                                        .addComponent(progressBar)
                                                                         /*.addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)*/)
                                                                 .addComponent(jButtonBack4)
                                                                 .addGap(55, 55, 55)
@@ -734,7 +736,7 @@ public class HoloTranView extends JFrame {
                                         .addComponent(jLabel18))
                                 .addGap(13, 13, 13)
                                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(progressBar)
+//                                        .addComponent(progressBar)
                                         //.addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(jLabel19))
                                 .addGap(13, 13, 13)
@@ -1014,11 +1016,15 @@ public class HoloTranView extends JFrame {
             // copy if it is a file
             channelSftp.cd(destinationPath);
             if (!sourceFile.getName().startsWith("."))
-                channelSftp.put(new FileInputStream(sourceFile), timestamp + " - " +inputUserID + " - " +sourceFile.getName(), ChannelSftp.OVERWRITE);
+                FILEUPLOADPATH = timestamp + " - " + inputUserID + " - " + sourceFile.getName();
+                channelSftp.put(new FileInputStream(sourceFile), FILEUPLOADPATH, ChannelSftp.OVERWRITE);
+                JOptionPane.showMessageDialog(null, "Upload successfully" );
 
         } else {
 
             System.out.println("inside else " + sourceFile.getName());
+            JOptionPane.showMessageDialog(null, "Error cannot upload" , "Error",
+                    JOptionPane.ERROR_MESSAGE);
             File[] files = sourceFile.listFiles();
 
             if (files != null && !sourceFile.getName().startsWith(".")) {
@@ -1242,7 +1248,6 @@ public class HoloTranView extends JFrame {
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
-    private JProgressBar progressBar;
 
     //p7
     private javax.swing.JButton jButton1999;

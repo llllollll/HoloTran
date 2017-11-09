@@ -603,7 +603,6 @@ public class HoloTranView extends JFrame {
                                     int userid = Integer.parseInt(userID);
                                     int fav = 0;
                                     String input = "'" + userid + "', " + "'" + videoTitle + "', " + "'" + "video/" + FILEUPLOADPATH + "', " + "'" + videoDescrip + "', " + "'" + fav + "'";
-                                    System.out.println(input);
                                     connect();
                                     String sql = "INSERT INTO Video_info(id_user, video_title, video_url, video_subtitle, favorite_count) VALUES (" + input + ")";
                                     st.executeUpdate(sql);

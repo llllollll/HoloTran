@@ -30,7 +30,7 @@ public class HoloTranView extends JFrame {
     private String userName;
     private String userID;
     private boolean loginSuccess;
-    public boolean uploadStatus;
+    private static boolean uploadStatus;
     public boolean convertStatus;
     static ChannelSftp channelSftp;
     static Session session;
@@ -580,46 +580,79 @@ public class HoloTranView extends JFrame {
                         jTextField7.setText("");
                         LOCALDIRECTORY = jTextField7.getText();
                     } else {
-                        try {
-                            LOCALDIRECTORY = jTextField7.getText();
-                            JSch jsch = new JSch();
-                            session = jsch.getSession(SFTUSER, SETURL, SETPORT);
-                            session.setPassword(SFTPASS);
-                            java.util.Properties config = new java.util.Properties();
-                            config.put("StrictHostKeyChecking", "no");
-                            session.setConfig(config);
-                            session.connect(); // Create SFTP Session
-                            channel = session.openChannel("sftp"); // Open SFTP Channel
-                            channel.connect();
-                            channelSftp = (ChannelSftp) channel;
-                            channelSftp.cd(SFTWORKINGDIR); // Change Directory on SFTP Server
+                        if(jTextField8.getText().length() > 1 && jTextField9.getText().length() > 1){
+                            try {
+                                LOCALDIRECTORY = jTextField7.getText();
+                                JSch jsch = new JSch();
+                                session = jsch.getSession(SFTUSER, SETURL, SETPORT);
+                                session.setPassword(SFTPASS);
+                                java.util.Properties config = new java.util.Properties();
+                                config.put("StrictHostKeyChecking", "no");
+                                session.setConfig(config);
+                                session.connect(); // Create SFTP Session
+                                channel = session.openChannel("sftp"); // Open SFTP Channel
+                                channel.connect();
+                                channelSftp = (ChannelSftp) channel;
+                                channelSftp.cd(SFTWORKINGDIR); // Change Directory on SFTP Server
 
-                            recursiveFolderUpload(LOCALDIRECTORY, SFTWORKINGDIR, userID);
+                                recursiveFolderUpload(LOCALDIRECTORY, SFTWORKINGDIR, userID);
 
-                            uploadStatus = false;
+                                if(uploadStatus) {
+                                    String videoTitle = jTextField8.getText();
+                                    String videoDescrip = jTextField8.getText();
+                                    int userid = Integer.parseInt(userID);
+                                    int fav = 0;
+                                    String input = "'" + userid + "', " + "'" + videoTitle + "', " + "'" + "video/" + FILEUPLOADPATH + "', " + "'" + videoDescrip + "', " + "'" + fav + "'";
+                                    System.out.println(input);
+                                    connect();
+                                    String sql = "INSERT INTO Video_info(id_user, video_title, video_url, video_subtitle, favorite_count) VALUES (" + input + ")";
+                                    st.executeUpdate(sql);
+                                    JOptionPane.showMessageDialog(null, "Your video upload completed");
+                                    jButtonBack3ActionPerformed(e);
+                                    try {
+                                        con.close();
+                                        connect();
+                                    } catch (Exception ex) {
 
-                        } catch (Exception ex) {
+                                    }
+                                }
+
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(null,
+                                        "Error executing upload task: " + ex.getMessage(), "Error",
+                                        JOptionPane.ERROR_MESSAGE);
+                                uploadStatus = false;
+                                jTextField7.setText("");
+                                channel = null;
+                                session = null;
+                                channelSftp = null;
+                                LOCALDIRECTORY = jTextField7.getText();
+                            } finally {
+                                if (channelSftp != null)
+                                    channelSftp.disconnect();
+                                if (channel != null)
+                                    channel.disconnect();
+                                if (session != null)
+                                    session.disconnect();
+                            }
+                        } else {
                             JOptionPane.showMessageDialog(null,
-                                    "Error executing upload task: " + ex.getMessage(), "Error",
+                                    "Please fill your video name and your video description", "Error",
                                     JOptionPane.ERROR_MESSAGE);
-                            uploadStatus = false;
                             jTextField7.setText("");
-                            channel = null;
-                            session = null;
-                            channelSftp = null;
+                            jTextField8.setText("");
+                            jTextField9.setText("");
                             LOCALDIRECTORY = jTextField7.getText();
-                        } finally {
-                            if (channelSftp != null)
-                                channelSftp.disconnect();
-                            if (channel != null)
-                                channel.disconnect();
-                            if (session != null)
-                                session.disconnect();
+                            uploadStatus = false;
                         }
+                        uploadStatus = false;
                         channel = null;
                         session = null;
                         channelSftp = null;
                         jTextField7.setText("");
+                        jTextField8.setText("");
+                        jTextField9.setText("");
+                        FILEUPLOADPATH = "";
                         LOCALDIRECTORY = jTextField7.getText();
                     }
                 }
@@ -660,6 +693,9 @@ public class HoloTranView extends JFrame {
                     JOptionPane.showMessageDialog(null, "Please wait until upload finish", "Error",
                             JOptionPane.ERROR_MESSAGE);
                 } else {
+                    jTextField8.setText("");
+                    jTextField9.setText("");
+                    jTextField7.setText("");
                     jButtonBack3ActionPerformed(e);
                     try {
                         con.close();
@@ -1018,13 +1054,15 @@ public class HoloTranView extends JFrame {
             if (!sourceFile.getName().startsWith("."))
                 FILEUPLOADPATH = timestamp + " - " + inputUserID + " - " + sourceFile.getName();
                 channelSftp.put(new FileInputStream(sourceFile), FILEUPLOADPATH, ChannelSftp.OVERWRITE);
-                JOptionPane.showMessageDialog(null, "Upload successfully" );
+//                JOptionPane.showMessageDialog(null, "Upload successfully" );
 
         } else {
 
             System.out.println("inside else " + sourceFile.getName());
             JOptionPane.showMessageDialog(null, "Error cannot upload" , "Error",
                     JOptionPane.ERROR_MESSAGE);
+
+            uploadStatus = false;
             File[] files = sourceFile.listFiles();
 
             if (files != null && !sourceFile.getName().startsWith(".")) {

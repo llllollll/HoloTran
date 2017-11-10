@@ -786,8 +786,10 @@ public class HoloTranView extends JFrame {
         jPanel7 = new javax.swing.JPanel();
         jLabel299 = new javax.swing.JLabel();
         jTextField199 = new javax.swing.JTextField();
-        jTextField299 = new javax.swing.JTextField();
-        jTextField399 = new javax.swing.JTextField();
+//        jTextField299 = new javax.swing.JTextField();
+//        jTextField399 = new javax.swing.JTextField();
+        jPasswordField299 = new javax.swing.JPasswordField();
+        jPasswordField399 = new javax.swing.JPasswordField();
         jButton1999 = new javax.swing.JButton();
         jButtonBack3 = new javax.swing.JButton();
         jLabel499 = new javax.swing.JLabel();
@@ -809,8 +811,10 @@ public class HoloTranView extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     String user = jTextField199.getText();
-                    String pass1 = jTextField299.getText();
-                    String pass2 = jTextField399.getText();
+                    String pass1 = String.valueOf(jPasswordField299.getPassword());
+                    String pass2 = String.valueOf(jPasswordField399.getPassword());
+//                    String pass1 = jTextField299.getText();
+//                    String pass2 = jTextField399.getText();
 //                    String pass = String.valueOf(jPasswordField1.getPassword());
                     if(user.length() >= 1 && pass1.length() >= 1 && pass2.length() >= 1) {
                         if(pass1.equals(pass2)) {
@@ -839,8 +843,10 @@ public class HoloTranView extends JFrame {
                         JOptionPane.showMessageDialog(null, "Please fill you username, password and confirm password");
                     }
                     jTextField199.setText("");
-                    jTextField299.setText("");
-                    jTextField399.setText("");
+                    jPasswordField299.setText("");
+                    jPasswordField399.setText("");
+//                    jTextField299.setText("");
+//                    jTextField399.setText("");
 //                    jPasswordField1.setText("");
 
                 } catch (Exception ex) {
@@ -865,6 +871,9 @@ public class HoloTranView extends JFrame {
         jButtonBack3.setText("BACK");
         jButtonBack3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                jTextField199.setText("");
+                jPasswordField299.setText("");
+                jPasswordField399.setText("");
                 jButtonBack3ActionPerformed(e);
                 try {
                     con.close();
@@ -900,8 +909,10 @@ public class HoloTranView extends JFrame {
                                                         .addGroup(jPanel7Layout.createSequentialGroup()
                                                                 .addComponent(jLabel599)
                                                                 .addGap(26, 26, 26)
-                                                                .addComponent(jTextField399, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                        .addComponent(jTextField299, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                                                .addComponent(jPasswordField399, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addComponent(jPasswordField299, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))))
+//                                                                .addComponent(jTextField399, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))
+//                                                        .addComponent(jTextField299, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                 .addGap(136, 136, 136))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
@@ -930,12 +941,14 @@ public class HoloTranView extends JFrame {
                                                 .addComponent(jLabel3999))
                                         .addGap(18, 18, 18)
                                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                .addComponent(jTextField299, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jPasswordField299, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                                                .addComponent(jTextField299, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addComponent(jLabel499))
                                         .addGap(18, 18, 18)
 
                                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                .addComponent(jTextField399, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                                                .addComponent(jTextField399, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jPasswordField399, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addComponent(jLabel599))
                                         .addGap(32, 32, 32)
                                         .addComponent(jButton1999, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
@@ -1298,8 +1311,10 @@ public class HoloTranView extends JFrame {
     // private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JTextField jTextField199;
-    private javax.swing.JTextField jTextField299;
-    private javax.swing.JTextField jTextField399;
+    private javax.swing.JPasswordField jPasswordField299;
+    private javax.swing.JPasswordField jPasswordField399;
+//    private javax.swing.JTextField jTextField299;
+//    private javax.swing.JTextField jTextField399;
     private javax.swing.JButton jButtonBack3;
     private javax.swing.JButton jButtonBack4;
 

@@ -602,6 +602,7 @@ public class HoloTranView extends JFrame {
                                     String videoDescrip = jTextField8.getText();
                                     int userid = Integer.parseInt(userID);
                                     int fav = 0;
+//                                    String input = "'" + userid + "', " + "'" + videoTitle + "', " + "'" + SFTWORKINGDIR + "/" + FILEUPLOADPATH + "', " + "'" + videoDescrip + "', " + "'" + fav + "'";
                                     String input = "'" + userid + "', " + "'" + videoTitle + "', " + "'" + "video/" + FILEUPLOADPATH + "', " + "'" + videoDescrip + "', " + "'" + fav + "'";
                                     connect();
                                     String sql = "INSERT INTO Video_info(id_user, video_title, video_url, video_subtitle, favorite_count) VALUES (" + input + ")";
@@ -1051,9 +1052,10 @@ public class HoloTranView extends JFrame {
             // copy if it is a file
             channelSftp.cd(destinationPath);
             if (!sourceFile.getName().startsWith("."))
-                FILEUPLOADPATH = timestamp + " - " + inputUserID + " - " + sourceFile.getName();
+                FILEUPLOADPATH = timestamp + inputUserID;
+                FILEUPLOADPATH = FILEUPLOADPATH.replaceAll("[^a-zA-Z0-9]", "");
+                FILEUPLOADPATH = FILEUPLOADPATH + sourceFile.getName();
                 channelSftp.put(new FileInputStream(sourceFile), FILEUPLOADPATH, ChannelSftp.OVERWRITE);
-//                JOptionPane.showMessageDialog(null, "Upload successfully" );
 
         } else {
 

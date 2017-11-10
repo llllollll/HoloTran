@@ -599,7 +599,7 @@ public class HoloTranView extends JFrame {
 
                                 if(uploadStatus) {
                                     String videoTitle = jTextField8.getText();
-                                    String videoDescrip = jTextField8.getText();
+                                    String videoDescrip = jTextField9.getText();
                                     int userid = Integer.parseInt(userID);
                                     int fav = 0;
 //                                    String input = "'" + userid + "', " + "'" + videoTitle + "', " + "'" + SFTWORKINGDIR + "/" + FILEUPLOADPATH + "', " + "'" + videoDescrip + "', " + "'" + fav + "'";

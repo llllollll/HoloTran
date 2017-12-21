@@ -608,7 +608,7 @@ public class HoloTranView extends JFrame {
                                     String sql = "INSERT INTO Video_info(id_user, video_title, video_url, video_subtitle, favorite_count) VALUES (" + input + ")";
                                     st.executeUpdate(sql);
                                     JOptionPane.showMessageDialog(null, "Your video upload completed");
-                                    jButtonBack3ActionPerformed(e);
+//                                    jButtonBack3ActionPerformed(e);
                                     try {
                                         con.close();
                                         connect();

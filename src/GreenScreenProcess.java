@@ -68,4 +68,5 @@ public class GreenScreenProcess {
         }
         MarvinPluginCollection.alphaBoundary(imageOut, 6);
     }
+    //
 } 
